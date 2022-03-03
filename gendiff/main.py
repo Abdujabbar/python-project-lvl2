@@ -13,8 +13,7 @@ def main():
                         help='set format of output', default='json')
 
     args = parser.parse_args()
-
-    diff = generate_diff(args.first_file, args.second_file)
+    diff = generate_diff(args.first_file, args.second_file, args.format)
     print(diff)
 
 
