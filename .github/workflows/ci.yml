@@ -37,3 +37,7 @@ jobs:
       - name: Run tests
         run: |
           make test
+
+      - name: Run test-cov
+        run: |
+          make test-cov
