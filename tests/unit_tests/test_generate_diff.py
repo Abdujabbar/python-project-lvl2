@@ -1,4 +1,5 @@
 from gendiff.gendiff import generate_diff
+from gendiff.renderers.json.json import render as render_json
 from tests import FIXTURES_PATH
 
 
@@ -8,7 +9,7 @@ def test_generate_diff_json():
     expected_path = f"{FIXTURES_PATH}/json/case1/expected.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2), f"Error on result, result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, render_json), f"Error on result, result"
 
 
 def test_generate_diff_yaml():
@@ -17,7 +18,7 @@ def test_generate_diff_yaml():
     expected_path = f"{FIXTURES_PATH}/yaml/case1/expected.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, 'yaml'), "Error on result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, render_json), "Error on result"
 
 
 def test_generate_diff_nested_json():
@@ -26,7 +27,7 @@ def test_generate_diff_nested_json():
     expected_path = f"{FIXTURES_PATH}/json/case2/expected.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2), f"Error on result, result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, render_json), f"Error on result, result"
 
 
 def test_generate_diff_nested_yaml():
@@ -35,4 +36,4 @@ def test_generate_diff_nested_yaml():
     expected_path = f"{FIXTURES_PATH}/yaml/case2/expected.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, 'yaml'), "Error on result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, render_json), "Error on result"

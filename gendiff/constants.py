@@ -7,5 +7,12 @@ DIFF_LINE_PLUS = "  + "
 
 ADDED = 1
 DELETED = 2
-CHANGED = 3
-SAME = 4
+SAME = 3
+CHILD_CHANGED = 4
+
+PREFIX_MAP = {
+    ADDED: "  + ",
+    DELETED: "  - ",
+    SAME: "    ",
+    CHILD_CHANGED: "    ",
+}
