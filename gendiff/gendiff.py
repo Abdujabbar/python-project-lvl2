@@ -1,6 +1,13 @@
 import yaml
 import json
 
+from gendiff.constants import SMALL_INTEND
+from gendiff.constants import INTEND
+from gendiff.constants import LINE_BREAK
+from gendiff.constants import DIFF_LINE_MINUS
+from gendiff.constants import DIFF_LINE_PLUS
+from gendiff.formatter import stylish
+
 
 def get_file_contents(path, format):
     with open(path, 'r') as stream:
@@ -11,26 +18,33 @@ def get_file_contents(path, format):
         return yaml.safe_load(stream)
 
 
-def generate_diff_dictionaries(content1, content2):
+
+def generate_diff_dictionaries(content1, content2, pads_count = 1):
     result = "{\n"
-    pads = "    "
     all_keys = sorted(set(list(content1.keys()) + list(content2.keys())))
+
     for key in all_keys:
         if key in content1 and key in content2:
             if content2[key] != content1[key]:
-                result += f"{pads} - {key}: {str(content1.get(key)).lower()}\n"
-                result += f"{pads} + {key}: {str(content2.get(key)).lower()}"
+                if isinstance(content2[key], dict) and isinstance(content2[key], dict):
+                    result += f"{INTEND * pads_count}{key}: " + generate_diff_dictionaries(content1.get(key), content2.get(key), pads_count + 1)
+                else:
+                    result += f"{INTEND * (pads_count - 1)}{DIFF_LINE_MINUS}{key}: {stylish(content1.get(key), pads_count + 1)}\n"
+                    result += f"{INTEND * (pads_count - 1)}{DIFF_LINE_PLUS}{key}: {stylish(content2.get(key), pads_count + 1)}"
             else:
-                result += f"{pads}   {key}: {str(content1.get(key)).lower()}"
+                result += f"{INTEND * pads_count}{key}: {stylish(content1.get(key), pads_count + 1)}"
         elif key not in content1:
-            result += f"{pads} - {key}: {str(content2.get(key)).lower()}"
+            result += f"{INTEND * (pads_count - 1)}{DIFF_LINE_PLUS}{key}: {stylish(content2.get(key), pads_count + 1)}"
         elif key not in content2:
-            result += f"{pads} + {key}: {str(content1.get(key)).lower()}"
+            result += f"{INTEND * (pads_count - 1)}{DIFF_LINE_MINUS}{key}: {stylish(content1.get(key), pads_count + 1)}"
         else:
-            result += f"{pads}   {key}: {str(content1.get(key)).lower()}"
+            result += f"{INTEND * pads_count}{key}: {stylish(content1.get(key), pads_count + 1)}"
         result += "\n"
-    result += "}\n"
+    result += INTEND * (pads_count - 1) + "}"
 
+    if pads_count == 1:
+        result += "\n"
+    
     return result
 
 
