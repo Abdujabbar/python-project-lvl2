@@ -20,24 +20,24 @@ def stylish(value, pads_count=2):
 
     return result
 
+def get_prefix(operator):
+    return PREFIX_MAP[operator]
 
-def render(diff_dictionary, depth=0):
+def render_dict_item(operator, item, depth):
+    if operator == CHILD_CHANGED:
+        return render(item, depth + 1)
+    
+    return stylish(item, depth + 2)
+
+
+def render(diff_dict, depth=0):
     result = "{\n"
+    
+    for k, items in diff_dict.items():
+        for operator, item in items:
+            value = render_dict_item(operator, item, depth)
+            result += f"{INTEND * depth}{get_prefix(operator)}{k}: {value}\n"
 
-    for k, items in diff_dictionary.items():
-        for v in items:
-            operator = v[0]
-            prefix = PREFIX_MAP[operator]
-
-            if operator == CHILD_CHANGED:
-                value = render(v[1], depth + 1)
-            else:
-                value = stylish(v[1], depth + 2)
-
-            result += f"{INTEND * depth}{prefix}{k}: {value}\n"
-
-    result += INTEND * depth + "}"
-    if depth == 0:
-        result += LINE_BREAK
+    result += INTEND * depth + "}" + (LINE_BREAK if depth == 0 else '')
 
     return result
