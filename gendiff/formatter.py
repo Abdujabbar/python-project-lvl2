@@ -1,13 +1,13 @@
 from gendiff.constants import INTEND
 
 
-def stylish(value, pads_count = 1):
+def stylish(value, pads_count=1):
     if value is None:
         return 'null'
 
     if isinstance(value, str):
         return value
-    
+
     if not isinstance(value, dict):
         return str(value).lower()
 
