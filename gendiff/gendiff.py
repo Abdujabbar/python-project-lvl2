@@ -20,7 +20,7 @@ def dicts_diff(dict1, dict2):
         if key not in dict1:
             diff_dictionary[key] = [(ADDED, dict2.get(key))]
             continue
-        
+
         if key not in dict2:
             diff_dictionary[key] = [(DELETED, dict1.get(key))]
             continue
@@ -39,7 +39,7 @@ def dicts_diff(dict1, dict2):
             continue
 
         diff_dictionary[key] = [(SAME, dict1.get(key))]
-       
+
     return diff_dictionary
 
 

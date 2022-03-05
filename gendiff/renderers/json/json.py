@@ -20,19 +20,21 @@ def stylish(value, pads_count=2):
 
     return result
 
+
 def get_prefix(operator):
     return PREFIX_MAP[operator]
+
 
 def render_dict_item(operator, item, depth):
     if operator == CHILD_CHANGED:
         return render(item, depth + 1)
-    
+
     return stylish(item, depth + 2)
 
 
 def render(diff_dict, depth=0):
     result = "{\n"
-    
+
     for k, items in diff_dict.items():
         for operator, item in items:
             value = render_dict_item(operator, item, depth)
