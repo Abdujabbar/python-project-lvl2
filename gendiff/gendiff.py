@@ -1,6 +1,6 @@
 import yaml
 import json
-
+from collections import defaultdict
 from gendiff.constants import ADDED, CHILD_CHANGED, DELETED, SAME
 
 
@@ -13,32 +13,27 @@ def get_file_contents(path):
         return yaml.safe_load(stream)
 
 
+def detect_operator_and_item(d1, d2, key):
+    if key not in d1:
+        return [(ADDED, d2.get(key))]
+    
+    if key not in d2:
+        return [(DELETED, d1.get(key))]
+
+    if isinstance(d1[key], dict) and isinstance(d2[key], dict):
+        return [(CHILD_CHANGED, dicts_diff(d1[key], d2[key]))]
+    
+    if d1.get(key) != d2.get(key):
+        return [(DELETED, d1.get(key)),
+                (ADDED, d2.get(key))]
+    
+    return [(SAME, d1.get(key))]
+
 def dicts_diff(dict1, dict2):
     all_keys = sorted(set(list(dict1.keys()) + list(dict2.keys())))
-    diff_dictionary = {}
+    diff_dictionary = defaultdict(list)
     for key in all_keys:
-        if key not in dict1:
-            diff_dictionary[key] = [(ADDED, dict2.get(key))]
-            continue
-
-        if key not in dict2:
-            diff_dictionary[key] = [(DELETED, dict1.get(key))]
-            continue
-
-        if isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
-            diff_dictionary[key] = [
-                (CHILD_CHANGED, dicts_diff(dict1[key], dict2[key]))
-            ]
-            continue
-
-        if dict1.get(key) != dict2.get(key):
-            diff_dictionary[key] = [
-                (DELETED, dict1.get(key)),
-                (ADDED, dict2.get(key))
-            ]
-            continue
-
-        diff_dictionary[key] = [(SAME, dict1.get(key))]
+        diff_dictionary[key].extend(detect_operator_and_item(dict1, dict2, key))
 
     return diff_dictionary
 
