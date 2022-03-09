@@ -1,14 +1,15 @@
 import argparse
 
-from .gendiff import generate_diff
+from ..gendiff import generate_diff
 
-from gendiff.renderers.json.render import render as json_renderer
-from gendiff.renderers.plain.render import render as plain_renderer
+from gendiff.formatters.stylish import render as stylish_renderer
+from gendiff.formatters.plain import render as plain_renderer
 
 
 def main():
     renderers_map = {
-        'json': json_renderer,
+        'stylish': stylish_renderer,
+        'json': '',
         'plain': plain_renderer
     }
 

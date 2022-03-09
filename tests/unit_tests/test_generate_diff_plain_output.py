@@ -1,5 +1,5 @@
 from gendiff.gendiff import generate_diff
-from gendiff.renderers.plain.render import render as plain_renderer
+from gendiff.formatters.plain import render as plain_renderer
 from tests import FIXTURES_PATH
 
 

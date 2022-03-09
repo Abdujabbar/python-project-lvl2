@@ -1,11 +1,23 @@
-from gendiff.renderers.plain.formatter import stylish
 from gendiff.constants import ADDED, CHANGED, DELETED, NESTED, SAME
+
+
+def render_value(value):
+    if value is None:
+        return 'null'
+
+    if isinstance(value, str):
+        return f"'{value}'"
+
+    if not isinstance(value, dict):
+        return str(value).lower()
+
+    return '[complex value]'
 
 
 def record_added(current_path, value):
     path = current_path.lstrip('.')
     return (
-        f"Property '{path}' was added with value: {stylish(value)}"
+        f"Property '{path}' was added with value: {render_value(value)}"
     )
 
 
@@ -15,8 +27,8 @@ def record_deleted(current_path, value):
 
 def record_changed(current_path, old_value, new_value):
     path = current_path.lstrip('.')
-    old_value = stylish(old_value)
-    new_value = stylish(new_value)
+    old_value = render_value(old_value)
+    new_value = render_value(new_value)
 
     return f"Property '{path}' was updated. From {old_value} to {new_value}"
 

@@ -1,5 +1,5 @@
 from gendiff.gendiff import generate_diff
-from gendiff.renderers.json.render import render as json_renderer
+from gendiff.formatters.stylish import render as stylish_renderer
 from tests import FIXTURES_PATH
 
 
@@ -9,7 +9,7 @@ def test_generate_diff_as_json_output_for_json_files():
     expected_path = f"{FIXTURES_PATH}/json/case1/expected_json.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, json_renderer), f"Error on result, result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, stylish_renderer), f"Error on result, result"
 
 
 def test_generate_diff_as_json_output_for_yaml_files():
@@ -18,7 +18,7 @@ def test_generate_diff_as_json_output_for_yaml_files():
     expected_path = f"{FIXTURES_PATH}/yaml/case1/expected_json.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, json_renderer), "Error on result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, stylish_renderer), "Error on result"
 
 
 def test_generate_diff_as_nested_json_output_for_json_files():
@@ -27,7 +27,7 @@ def test_generate_diff_as_nested_json_output_for_json_files():
     expected_path = f"{FIXTURES_PATH}/json/case2/expected_json.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, json_renderer), f"Error on result, result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, stylish_renderer), f"Error on result, result"
 
 
 def test_generate_diff_as_nested_json_output_for_yaml_files():
@@ -36,4 +36,4 @@ def test_generate_diff_as_nested_json_output_for_yaml_files():
     expected_path = f"{FIXTURES_PATH}/yaml/case2/expected_json.txt"
     
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, json_renderer), "Error on result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, stylish_renderer), "Error on result"

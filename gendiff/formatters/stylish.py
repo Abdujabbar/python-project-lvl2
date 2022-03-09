@@ -6,7 +6,28 @@ from gendiff.constants import INTEND
 from gendiff.constants import PREFIX_MAP
 from gendiff.constants import LINE_BREAK
 from gendiff.constants import SAME
-from gendiff.renderers.json.formatter import stylish
+
+
+def render_value(value, pads_count=2):
+    if value is None:
+        return 'null'
+
+    if isinstance(value, str):
+        return value
+
+    if not isinstance(value, dict):
+        return str(value).lower()
+
+    result = "{\n"
+
+    for k, v in value.items():
+        result += (
+            f"{INTEND * pads_count}{k}: {render_value(v, pads_count + 1)}\n"
+        )
+
+    result += INTEND * (pads_count - 1) + "}"
+
+    return result
 
 
 def get_prefix(key, depth, operator):
@@ -14,11 +35,11 @@ def get_prefix(key, depth, operator):
 
 
 def record_added(depth, key, value):
-    return f"{get_prefix(key, depth, ADDED)} {stylish(value, depth + 2)}"
+    return f"{get_prefix(key, depth, ADDED)} {render_value(value, depth + 2)}"
 
 
 def record_deleted(depth, key, value):
-    return f"{get_prefix(key, depth, DELETED)} {stylish(value, depth + 2)}"
+    return f"{get_prefix(key, depth, DELETED)} {render_value(value, depth + 2)}"
 
 
 def record_changed(depth, key, old_value, new_value):
@@ -33,7 +54,7 @@ def record_nested(depth, key, value):
 
 
 def record_same(depth, key, value):
-    return f"{get_prefix(key, depth, SAME)} {stylish(value, depth + 2)}"
+    return f"{get_prefix(key, depth, SAME)} {render_value(value, depth + 2)}"
 
 
 methods = {
