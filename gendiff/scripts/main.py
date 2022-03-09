@@ -4,12 +4,13 @@ from ..gendiff import generate_diff
 
 from gendiff.formatters.stylish import render as stylish_renderer
 from gendiff.formatters.plain import render as plain_renderer
+from gendiff.formatters.json import render as json_renderer
 
 
 def main():
     renderers_map = {
         'stylish': stylish_renderer,
-        'json': '',
+        'json': json_renderer,
         'plain': plain_renderer
     }
 
@@ -18,7 +19,7 @@ def main():
     parser.add_argument('second_file', metavar='second_file')
 
     parser.add_argument('-f', '--format',
-                        help='set format of output', default='json')
+                        help='set format of output', default='stylish')
 
     args = parser.parse_args()
 
