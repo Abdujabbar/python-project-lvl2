@@ -1,11 +1,9 @@
-from gendiff.constants import ADDED
-from gendiff.constants import CHANGED
-from gendiff.constants import DELETED
-from gendiff.constants import NESTED
-from gendiff.constants import INTEND
-from gendiff.constants import PREFIX_MAP
-from gendiff.constants import LINE_BREAK
-from gendiff.constants import SAME
+INTEND = "    "
+LINE_BREAK = "\n"
+
+ADDED_PREFIX = "  + "
+DELETED_PREFIX = "  - "
+EMPTY_PREFIX = "    "
 
 
 def render_value(value, pads_count=2):
@@ -22,7 +20,8 @@ def render_value(value, pads_count=2):
 
     for k, v in value.items():
         result += (
-            f"{INTEND * pads_count}{k}: {render_value(v, pads_count + 1)}\n"
+            f"{INTEND * pads_count}{k}: "
+            f"{render_value(v, pads_count + 1)}{LINE_BREAK}"
         )
 
     result += INTEND * (pads_count - 1) + "}"
@@ -30,16 +29,18 @@ def render_value(value, pads_count=2):
     return result
 
 
-def get_prefix(key, depth, operator):
-    return f"{INTEND * depth}{PREFIX_MAP[operator]}{key}:"
-
-
 def record_added(depth, key, value):
-    return f"{get_prefix(key, depth, ADDED)} {render_value(value, depth + 2)}"
+    return (
+        f"{INTEND * depth}{ADDED_PREFIX}{key}: "
+        f"{render_value(value, depth + 2)}"
+    )
 
 
 def record_deleted(depth, key, value):
-    return f"{get_prefix(key, depth, DELETED)} {render_value(value, depth + 2)}"
+    return (
+        f"{INTEND * depth}{DELETED_PREFIX}{key}: "
+        f"{render_value(value, depth + 2)}"
+    )
 
 
 def record_changed(depth, key, old_value, new_value):
@@ -50,38 +51,23 @@ def record_changed(depth, key, old_value, new_value):
 
 
 def record_nested(depth, key, value):
-    return f"{get_prefix(key, depth, SAME)} {render(value, depth + 1)}"
+    return f"{INTEND * depth}{EMPTY_PREFIX}{key}: {render(value, depth + 1)}"
 
 
 def record_same(depth, key, value):
-    return f"{get_prefix(key, depth, SAME)} {render_value(value, depth + 2)}"
-
-
-methods = {
-    ADDED: record_added,
-    DELETED: record_deleted,
-    CHANGED: record_changed,
-    NESTED: record_nested,
-    SAME: record_same,
-}
-
-
-def render_record(key, value, depth):
-    operator, item = value
-
-    if operator not in methods:
-        raise Exception(f"Method for {operator} not implemented")
-
-    fn = methods[operator]
-
-    return fn(*[depth, key, *item])
+    return (
+        f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
+        f"{render_value(value, depth + 2)}"
+    )
 
 
 def render(diff_dict, depth=0):
-    result = "{\n"
+    result = "{" + LINE_BREAK
 
     for key, value in diff_dict.items():
-        result += render_record(key, value, depth) + LINE_BREAK
+        method = value.get('method')
+        item = value.get('item')
+        result += globals()[method](*[depth, key, *item]) + LINE_BREAK
 
     result += INTEND * depth + "}" + (LINE_BREAK if depth == 0 else '')
 

@@ -1,6 +1,3 @@
-from gendiff.constants import ADDED, CHANGED, DELETED, NESTED, SAME
-
-
 def render_value(value):
     if value is None:
         return 'null'
@@ -41,30 +38,12 @@ def record_same(current_path, value):
     return ''
 
 
-methods = {
-    ADDED: record_added,
-    DELETED: record_deleted,
-    CHANGED: record_changed,
-    NESTED: record_nested,
-    SAME: record_same
-}
-
-
-def render_record(current_path, value):
-    operator, item = value
-
-    if operator not in methods:
-        raise Exception(f"Method for {operator} not implemented")
-
-    fn = methods[operator]
-
-    return fn(*[current_path, *item])
-
-
 def render(diff_dict, current_path=''):
     result = []
-    for k, v in diff_dict.items():
-        current_record = render_record(f"{current_path}.{k}", v)
+    for key, value in diff_dict.items():
+        method = value.get('method')
+        item = value.get('item')
+        current_record = globals()[method](*[f"{current_path}.{key}", *item])
         result.append(current_record)
 
     return '\n'.join(filter(None, result))
