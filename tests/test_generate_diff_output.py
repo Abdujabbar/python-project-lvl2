@@ -11,7 +11,7 @@ from tests import FIXTURES_PATH
         f"{FIXTURES_PATH}/result_stylish",
         "stylish"
     ),
-   (
+    (
         f"{FIXTURES_PATH}/file1.json",
         f"{FIXTURES_PATH}/file2.json",
         f"{FIXTURES_PATH}/result_plain",
@@ -23,7 +23,7 @@ from tests import FIXTURES_PATH
         f"{FIXTURES_PATH}/result_stylish",
         "stylish"
     ),
-   (
+    (
         f"{FIXTURES_PATH}/file1.yml",
         f"{FIXTURES_PATH}/file2.yml",
         f"{FIXTURES_PATH}/result_plain",
@@ -32,4 +32,4 @@ from tests import FIXTURES_PATH
 ])
 def test_gen_diff_output(file1, file2, expected_path, format):
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, format), f"Error on result, result"
+        assert "".join(f.readlines()) == generate_diff(file1, file2, format)
