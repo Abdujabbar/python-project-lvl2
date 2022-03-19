@@ -69,6 +69,6 @@ def render(diff_dict, depth=0):
         item = value.get('item')
         result += globals()[method](*[depth, key, *item]) + LINE_BREAK
 
-    result += INTEND * depth + "}" + (LINE_BREAK if depth == 0 else '')
+    result += INTEND * depth + "}"
 
     return result
