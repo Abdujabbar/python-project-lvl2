@@ -1,5 +1,5 @@
 import pytest
-from gendiff.generate_diff_impl import generate_diff
+from gendiff.generator_diff import generate_diff
 from tests import FIXTURES_PATH
 
 
