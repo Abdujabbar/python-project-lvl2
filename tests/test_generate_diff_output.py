@@ -1,4 +1,5 @@
 import pytest
+from gendiff.formatters import renderers_map
 from gendiff.generator_diff import generate_diff
 from tests import FIXTURES_PATH
 
@@ -31,4 +32,6 @@ from tests import FIXTURES_PATH
 ])
 def test_gen_diff_output(file1, file2, expected_path, format):
     with open(expected_path, "r") as f:
-        assert "".join(f.readlines()) == generate_diff(file1, file2, format), f"Error on result, result"
+        dicts_diff = generate_diff(file1, file2)
+        renderer = renderers_map[format]
+        assert "".join(f.readlines()) == renderer(dicts_diff), f"Error on result, result"
