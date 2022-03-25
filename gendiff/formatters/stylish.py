@@ -6,7 +6,7 @@ DELETED_PREFIX = "  - "
 EMPTY_PREFIX = "    "
 
 
-def render_value(value, pads_count=2):
+def render_node(value, pads_count=2):
     if value is None:
         return 'null'
 
@@ -21,7 +21,7 @@ def render_value(value, pads_count=2):
     for k, v in value.items():
         result += (
             f"{INTEND * pads_count}{k}: "
-            f"{render_value(v, pads_count + 1)}{LINE_BREAK}"
+            f"{render_node(v, pads_count + 1)}{LINE_BREAK}"
         )
 
     result += INTEND * (pads_count - 1) + "}"
@@ -29,46 +29,64 @@ def render_value(value, pads_count=2):
     return result
 
 
-def record_added(depth, key, value):
-    return (
-        f"{INTEND * depth}{ADDED_PREFIX}{key}: "
-        f"{render_value(value, depth + 2)}"
-    )
+def render_record(depth, key, record):
+    method = record.get('method')
+    result = ''
+    if method == 'record_added':
+        result += (
+            f"{INTEND * depth}{ADDED_PREFIX}{key}: "
+            f"{render_node(record.get('node'), depth + 2)}"
+        )
 
+    if method == 'record_deleted':
+        result += (
+            f"{INTEND * depth}{DELETED_PREFIX}{key}: "
+            f"{render_node(record.get('node'), depth + 2)}"
+        )
 
-def record_deleted(depth, key, value):
-    return (
-        f"{INTEND * depth}{DELETED_PREFIX}{key}: "
-        f"{render_value(value, depth + 2)}"
-    )
+    if method == 'record_changed':
+        result += (
+            f"{INTEND * depth}{DELETED_PREFIX}{key}: "
+            f"{render_node(record.get('old'), depth + 2)}"
+        ) + LINE_BREAK
+        result += (
+            f"{INTEND * depth}{ADDED_PREFIX}{key}: "
+            f"{render_node(record.get('new'), depth + 2)}"
+        )
 
+    if method == 'record_nested':
+        result += (
+            f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
+            f"{render_helper(record.get('children'), depth + 1)}"
+        )
 
-def record_changed(depth, key, old_value, new_value):
-    result = ""
-    result += record_deleted(depth, key, old_value) + LINE_BREAK
-    result += record_added(depth, key, new_value)
+    if method == 'record_same':
+        result += (
+            f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
+            f"{render_node(record.get('node'), depth + 2)}"
+        )
+
     return result
 
 
-def record_nested(depth, key, value):
-    return f"{INTEND * depth}{EMPTY_PREFIX}{key}: {render(value, depth + 1)}"
+def render_helper(diff_dict, depth=0):
+    if not diff_dict:
+        return ''
 
+    if not isinstance(diff_dict, dict):
+        raise Exception(
+            f"Unexpected paramter: {type(diff_dict)}, awaited: dict"
+        )
 
-def record_same(depth, key, value):
-    return (
-        f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
-        f"{render_value(value, depth + 2)}"
-    )
-
-
-def render(diff_dict, depth=0):
     result = "{" + LINE_BREAK
 
-    for key, value in diff_dict.items():
-        method = value.get('method')
-        item = value.get('item')
-        result += globals()[method](*[depth, key, *item]) + LINE_BREAK
+    for key, record in diff_dict.items():
+        result += render_record(depth, key, record) + LINE_BREAK
 
     result += INTEND * depth + "}"
 
     return result
+
+
+def render(diff_dict):
+    return render_helper(diff_dict)
