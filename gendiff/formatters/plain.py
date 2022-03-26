@@ -13,7 +13,7 @@ def render_node(value):
 
 def render_record(current_path, record):
     path = current_path.lstrip('.')
-    method = record.get('method')
+    method = record.get('action')
     result = ''
     if method == 'record_added':
         result += (

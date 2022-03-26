@@ -4,31 +4,31 @@ from collections import defaultdict
 def parse_node(d1, d2, key):
     if key not in d1:
         return {
-            'method': 'record_added',
+            'action': 'record_added',
             'node': d2.get(key)
         }
 
     if key not in d2:
         return {
-            'method': 'record_deleted',
+            'action': 'record_deleted',
             'node': d1.get(key)
         }
 
     if isinstance(d1[key], dict) and isinstance(d2[key], dict):
         return {
-            'method': 'record_nested',
+            'action': 'record_nested',
             'children': generate_dicts_difference(d1[key], d2[key])
         }
 
     if d1.get(key) != d2.get(key):
         return {
-            'method': 'record_changed',
+            'action': 'record_changed',
             'old': d1.get(key),
             'new': d2.get(key)
         }
 
     return {
-        'method': 'record_same',
+        'action': 'record_same',
         'node': d1.get(key)
     }
 

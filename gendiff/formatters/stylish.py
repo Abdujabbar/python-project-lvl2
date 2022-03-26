@@ -30,7 +30,7 @@ def render_node(value, pads_count=2):
 
 
 def render_record(depth, key, record):
-    method = record.get('method')
+    method = record.get('action')
     result = ''
     if method == 'record_added':
         result += (
