@@ -6,7 +6,7 @@ DELETED_PREFIX = "  - "
 EMPTY_PREFIX = "    "
 
 
-def render_node(value, pads_count=2):
+def convert_value_to_string(value, pads_count=2):
     if value is None:
         return 'null'
 
@@ -16,12 +16,12 @@ def render_node(value, pads_count=2):
     if not isinstance(value, dict):
         return str(value).lower()
 
-    result = "{\n"
+    result = "{" + LINE_BREAK
 
     for k, v in value.items():
         result += (
             f"{INTEND * pads_count}{k}: "
-            f"{render_node(v, pads_count + 1)}{LINE_BREAK}"
+            f"{convert_value_to_string(v, pads_count + 1)}{LINE_BREAK}"
         )
 
     result += INTEND * (pads_count - 1) + "}"
@@ -29,47 +29,47 @@ def render_node(value, pads_count=2):
     return result
 
 
-def render_record(depth, key, record):
+def convert_record_to_string(depth, key, record):
     method = record.get('action')
     result = ''
     if method == 'record_added':
         result += (
             f"{INTEND * depth}{ADDED_PREFIX}{key}: "
-            f"{render_node(record.get('node'), depth + 2)}"
+            f"{convert_value_to_string(record.get('value'), depth + 2)}"
         )
 
     if method == 'record_deleted':
         result += (
             f"{INTEND * depth}{DELETED_PREFIX}{key}: "
-            f"{render_node(record.get('node'), depth + 2)}"
+            f"{convert_value_to_string(record.get('value'), depth + 2)}"
         )
 
     if method == 'record_changed':
         result += (
             f"{INTEND * depth}{DELETED_PREFIX}{key}: "
-            f"{render_node(record.get('old'), depth + 2)}"
+            f"{convert_value_to_string(record.get('old'), depth + 2)}"
         ) + LINE_BREAK
         result += (
             f"{INTEND * depth}{ADDED_PREFIX}{key}: "
-            f"{render_node(record.get('new'), depth + 2)}"
+            f"{convert_value_to_string(record.get('new'), depth + 2)}"
         )
 
     if method == 'record_nested':
         result += (
             f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
-            f"{render_helper(record.get('children'), depth + 1)}"
+            f"{render(record.get('children'), depth + 1)}"
         )
 
     if method == 'record_same':
         result += (
             f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
-            f"{render_node(record.get('node'), depth + 2)}"
+            f"{convert_value_to_string(record.get('value'), depth + 2)}"
         )
 
     return result
 
 
-def render_helper(diff_dict, depth=0):
+def render(diff_dict, depth=0):
     if not diff_dict:
         return ''
 
@@ -81,12 +81,8 @@ def render_helper(diff_dict, depth=0):
     result = "{" + LINE_BREAK
 
     for key, record in diff_dict.items():
-        result += render_record(depth, key, record) + LINE_BREAK
+        result += convert_record_to_string(depth, key, record) + LINE_BREAK
 
     result += INTEND * depth + "}"
 
     return result
-
-
-def render(diff_dict):
-    return render_helper(diff_dict)
