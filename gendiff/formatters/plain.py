@@ -1,4 +1,4 @@
-def get_value_as_string(value):
+def to_string(value):
     if value is None:
         return 'null'
 
@@ -11,14 +11,14 @@ def get_value_as_string(value):
     return '[complex value]'
 
 
-def convert_record_to_string(current_path, record):
+def convert_record_to_string(record, current_path):
     path = current_path.lstrip('.')
     method = record.get('action')
     result = ''
     if method == 'record_added':
         result += (
             f"Property '{path}' was added with value:"
-            f" {get_value_as_string(record.get('value'))}"
+            f" {to_string(record.get('value'))}"
         )
 
     if method == 'record_deleted':
@@ -30,8 +30,8 @@ def convert_record_to_string(current_path, record):
     if method == 'record_changed':
         result += (
             f"Property '{path}' was updated. "
-            f"From {get_value_as_string(record.get('old'))}"
-            f" to {get_value_as_string(record.get('new'))}"
+            f"From {to_string(record.get('old'))}"
+            f" to {to_string(record.get('new'))}"
         )
 
     return result
@@ -41,6 +41,6 @@ def render(diff_dict, current_path=''):
     result = []
     for key, record in diff_dict.items():
         result.append(convert_record_to_string(
-            f"{current_path}.{key}", record))
+            record, f"{current_path}.{key}"))
 
     return '\n'.join(filter(None, result))

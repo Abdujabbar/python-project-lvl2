@@ -16,7 +16,7 @@ pip install -i https://test.pypi.org/simple/ abdujabbar-detect-config-tool
 Demo
 -------------------------------------------------
 
-https://asciinema.org/a/UMM8Nzv2GzagU4QER0irif89X
+[![asciicast](https://asciinema.org/a/BcVe6RphHRICUYflnxMDrKe8x.svg)](https://asciinema.org/a/BcVe6RphHRICUYflnxMDrKe8x)
 
 
 ### Hexlet tests and linter status:

@@ -6,7 +6,7 @@ DELETED_PREFIX = "  - "
 EMPTY_PREFIX = "    "
 
 
-def convert_value_to_string(value, pads_count=2):
+def to_string(value, pads_count=2):
     if value is None:
         return 'null'
 
@@ -21,7 +21,7 @@ def convert_value_to_string(value, pads_count=2):
     for k, v in value.items():
         result += (
             f"{INTEND * pads_count}{k}: "
-            f"{convert_value_to_string(v, pads_count + 1)}{LINE_BREAK}"
+            f"{to_string(v, pads_count + 1)}{LINE_BREAK}"
         )
 
     result += INTEND * (pads_count - 1) + "}"
@@ -29,47 +29,47 @@ def convert_value_to_string(value, pads_count=2):
     return result
 
 
-def convert_record_to_string(depth, key, record):
+def convert_record_to_string(record, depth, key):
     method = record.get('action')
     result = ''
     if method == 'record_added':
         result += (
             f"{INTEND * depth}{ADDED_PREFIX}{key}: "
-            f"{convert_value_to_string(record.get('value'), depth + 2)}"
+            f"{to_string(record.get('value'), depth + 2)}"
         )
 
     if method == 'record_deleted':
         result += (
             f"{INTEND * depth}{DELETED_PREFIX}{key}: "
-            f"{convert_value_to_string(record.get('value'), depth + 2)}"
+            f"{to_string(record.get('value'), depth + 2)}"
         )
 
     if method == 'record_changed':
         result += (
             f"{INTEND * depth}{DELETED_PREFIX}{key}: "
-            f"{convert_value_to_string(record.get('old'), depth + 2)}"
+            f"{to_string(record.get('old'), depth + 2)}"
         ) + LINE_BREAK
         result += (
             f"{INTEND * depth}{ADDED_PREFIX}{key}: "
-            f"{convert_value_to_string(record.get('new'), depth + 2)}"
+            f"{to_string(record.get('new'), depth + 2)}"
         )
 
     if method == 'record_nested':
         result += (
             f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
-            f"{render(record.get('children'), depth + 1)}"
+            f"{crawl(record.get('children'), depth + 1)}"
         )
 
     if method == 'record_same':
         result += (
             f"{INTEND * depth}{EMPTY_PREFIX}{key}: "
-            f"{convert_value_to_string(record.get('value'), depth + 2)}"
+            f"{to_string(record.get('value'), depth + 2)}"
         )
 
     return result
 
 
-def render(diff_dict, depth=0):
+def crawl(diff_dict, depth=0):
     if not diff_dict:
         return ''
 
@@ -81,8 +81,12 @@ def render(diff_dict, depth=0):
     result = "{" + LINE_BREAK
 
     for key, record in diff_dict.items():
-        result += convert_record_to_string(depth, key, record) + LINE_BREAK
+        result += convert_record_to_string(record, depth, key) + LINE_BREAK
 
     result += INTEND * depth + "}"
 
     return result
+
+
+def render(diff_dict):
+    return crawl(diff_dict)
