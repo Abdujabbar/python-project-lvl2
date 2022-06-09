@@ -1,4 +1,4 @@
-from gendiff.dicts import build_difference
+from gendiff.dicts import build_diff
 from gendiff.formatters import formatter
 from gendiff.parser import parse_content
 
@@ -13,6 +13,6 @@ def generate_diff(file1, file2, format='stylish'):
     content1 = get_content(file1)
     content2 = get_content(file2)
 
-    diff = build_difference(content1, content2)
+    diff = build_diff(content1, content2)
 
     return formatter(format, diff)
